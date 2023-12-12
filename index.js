@@ -47,7 +47,7 @@ async function run() {
     });
     //bookings
     app.get("/bookings", async (req, res) => {
-      console.log(req.query.email);
+      // console.log(req.query.email);
       let query = {};
       if (req.query?.email) {
         query = { email: req.query.email };
@@ -62,12 +62,29 @@ async function run() {
       const result = await bookingCollection.insertOne(booking);
       res.send(result);
     });
+    //update
+
+    app.patch("/bookings/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedBooking = req.body;
+      console.log(updatedBooking);
+      const updateDoc = {
+        $set: {
+          status: updatedBooking.status,
+        },
+      };
+      const result = await bookingCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    //delete
 
     app.delete("/bookings/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await bookingCollection.deleteOne(query);
-      req.send(result);
+      res.send(result);
     });
   } finally {
     // Ensures that the client will close when you finish/error
